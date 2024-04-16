@@ -9,8 +9,8 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-dirData <- "E:/Google Drive/research/projects/Data/campus_weather/ham_weather"
-dirOut <- "E:/Google Drive/research/projects/Data/campus_weather/ham_weather_out"
+dirData <- "G:/My Drive/research/projects/Data/campus_weather/ham_weather"
+dirOut <- "G:/My Drive/research/projects/Data/campus_weather/ham_weather_out"
 
 ############### Organization of old data -----
 
@@ -107,7 +107,21 @@ colMeta <- data.frame(col_names= c("Date","SolRad","Precip","LightningAct","Ligh
                       col_units = units)
 
 ############### Script for monthly addition of new data ----
+weather5 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1713299543/z6-10463(z6-10463)-Configuration 1-1713299544.0092711.csv"),
+                     skip=3, header=FALSE)
+colnames(weather5) <- c("Date","SolRad","Precip","LightningAct","LightningDist","WindDir","WindSpeed",
+                        "GustSpeed","AirTemp","VaporPr","AtmosPr","XLevel","YLevel","MaxPrecip",
+                        "SensorTemp","VPD","SWC","SoilTemp", "EC", "BatPct","BatVolt","RefPr","LogTemp")
 
+dateF5 <- mdy_hms(weather5$Date)
+weather5$doy <- yday(dateF5)
+weather5$hour <- hour(dateF5)
+weather5$year <- year(dateF5)
+
+weather5 <- weather5 %>%
+  filter(doy != 15)
+
+weatherT4 <- rbind(weatherT3, weather5)
 
 
 ############### Data flags:
@@ -119,7 +133,7 @@ colMeta <- data.frame(col_names= c("Date","SolRad","Precip","LightningAct","Ligh
 # there is no accumulation of frozen precipitation. 
 
 # enter name of current data frame
-weatherToFlag <- weatherT3
+weatherToFlag <- weatherT4
 
 # freeze flag 
 freezeFlag <- rep(NA,7)
@@ -152,8 +166,8 @@ PFlag <- data.frame(col_names = c("PrecipFlag"),
                     col_units = c("Freeze = freezing warning, Debris= blocked bucket"))
 colInfo <- rbind(colMeta[1:3,], PFlag, colMeta[4:23,])
 
-write.csv(weatherOut, paste0(dirOut,"/v1.1/Atmos41_weather.csv"), row.names=FALSE)
-write.csv(colInfo, paste0(dirOut,"/v1.1/Atmos41_metadata_columns.csv"), row.names=FALSE)
+write.csv(weatherOut, paste0(dirOut,"/v1.2/Atmos41_weather.csv"), row.names=FALSE)
+write.csv(colInfo, paste0(dirOut,"/v1.2/Atmos41_metadata_columns.csv"), row.names=FALSE)
 
 
 weatherOut$dateF <-  mdy_hms(weatherOut$Date)
