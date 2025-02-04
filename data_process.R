@@ -159,6 +159,24 @@ weather7 <- weather7 %>%
 
 weatherT6 <- rbind(weatherT5, weather7)
 
+########### end date Feb 3
+weather8 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1738698473/z6-10463(z6-10463)-Configuration 1-1738698473.3568814.csv"),
+                     skip=3, header=FALSE)
+colnames(weather8) <- c("Date","SolRad","Precip","LightningAct","LightningDist","WindDir","WindSpeed",
+                        "GustSpeed","AirTemp","VaporPr","AtmosPr","XLevel","YLevel","MaxPrecip",
+                        "SensorTemp","VPD","SWC","SoilTemp", "EC", "BatPct","BatVolt","RefPr","LogTemp")
+
+dateF8 <- mdy_hms(weather8$Date)
+weather8$doy <- yday(dateF8)
+weather8$hour <- hour(dateF8)
+weather8$year <- year(dateF8)
+
+weather8 <- weather8 %>%
+  filter(doy != 247)
+
+weatherT7 <- rbind(weatherT6, weather8)
+
+
 ############### Data flags:
 # create a precipitation flag:
 # precip flag values:
@@ -168,7 +186,7 @@ weatherT6 <- rbind(weatherT5, weather7)
 # there is no accumulation of frozen precipitation. 
 
 # enter name of current data frame
-weatherToFlag <- weatherT6
+weatherToFlag <- weatherT7
 
 # freeze flag 
 freezeFlag <- rep(NA,7)
@@ -201,8 +219,8 @@ PFlag <- data.frame(col_names = c("PrecipFlag"),
                     col_units = c("Freeze = freezing warning, Debris= blocked bucket"))
 colInfo <- rbind(colMeta[1:3,], PFlag, colMeta[4:23,])
 
-write.csv(weatherOut, paste0(dirOut,"/v1.5/Atmos41_weather.csv"), row.names=FALSE)
-write.csv(colInfo, paste0(dirOut,"/v1.5/Atmos41_metadata_columns.csv"), row.names=FALSE)
+write.csv(weatherOut, paste0(dirOut,"/v1.6/Atmos41_weather.csv"), row.names=FALSE)
+write.csv(colInfo, paste0(dirOut,"/v1.6/Atmos41_metadata_columns.csv"), row.names=FALSE)
 
 
 weatherOut$dateF <-  mdy_hms(weatherOut$Date)
