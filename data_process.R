@@ -3,6 +3,7 @@
 #####################################################
 
 # organizes data into a csv with accompanying metadata file
+# issues with tipping bucket drainage need to be addressed May 2025 - 6/12/2025. Issues with plugging sensor back in.
 
 ############### libraries and directories ----
 library(dplyr)
