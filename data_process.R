@@ -177,6 +177,23 @@ weather8 <- weather8 %>%
 
 weatherT7 <- rbind(weatherT6, weather8)
 
+########### end date July 29
+weather9 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1753889326/z6-10463(z6-10463)-Configuration 1-1753889326.5837212.csv"),
+                     skip=3, header=FALSE)
+colnames(weather9) <- c("Date","SolRad","Precip","LightningAct","LightningDist","WindDir","WindSpeed",
+                        "GustSpeed","AirTemp","VaporPr","AtmosPr","XLevel","YLevel","MaxPrecip",
+                        "SensorTemp","VPD","SWC","SoilTemp", "EC", "BatPct","BatVolt","RefPr","LogTemp")
+
+dateF9 <- mdy_hms(weather9$Date)
+weather9$doy <- yday(dateF9)
+weather9$hour <- hour(dateF9)
+weather9$year <- year(dateF9)
+
+weather9 <- weather9 %>%
+  filter(doy != 34)
+
+weatherT8 <- rbind(weatherT7, weather9)
+
 
 ############### Data flags:
 # create a precipitation flag:
@@ -187,7 +204,7 @@ weatherT7 <- rbind(weatherT6, weather8)
 # there is no accumulation of frozen precipitation. 
 
 # enter name of current data frame
-weatherToFlag <- weatherT7
+weatherToFlag <- weatherT8
 
 # freeze flag 
 freezeFlag <- rep(NA,7)
@@ -199,10 +216,11 @@ for(i in 8:nrow(weatherToFlag)){
 
 Precipflag <- ifelse(freezeFlag == 1, "Freeze", NA) 
 
+
                      
 # flag for recorded excessive debris in weather station
 weatherToFlag$PrecipFlag <- ifelse(weatherToFlag$doy >= 121 & weatherToFlag$doy <= 188 & weatherToFlag$year == 2021,  "Debris", Precipflag)
- 
+weatherToFlag$PrecipFlag <- ifelse(weatherToFlag$doy >= 1 & weatherToFlag$doy <= 164 & weatherToFlag$year == 2025,  "Debris", Precipflag) 
 
 # reorganize 
 
@@ -220,8 +238,8 @@ PFlag <- data.frame(col_names = c("PrecipFlag"),
                     col_units = c("Freeze = freezing warning, Debris= blocked bucket"))
 colInfo <- rbind(colMeta[1:3,], PFlag, colMeta[4:23,])
 
-write.csv(weatherOut, paste0(dirOut,"/v1.6/Atmos41_weather.csv"), row.names=FALSE)
-write.csv(colInfo, paste0(dirOut,"/v1.6/Atmos41_metadata_columns.csv"), row.names=FALSE)
+write.csv(weatherOut, paste0(dirOut,"/v1.7/Atmos41_weather.csv"), row.names=FALSE)
+write.csv(colInfo, paste0(dirOut,"/v1.7/Atmos41_metadata_columns.csv"), row.names=FALSE)
 
 
 weatherOut$dateF <-  mdy_hms(weatherOut$Date)
