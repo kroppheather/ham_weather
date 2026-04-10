@@ -177,8 +177,8 @@ weather8 <- weather8 %>%
 
 weatherT7 <- rbind(weatherT6, weather8)
 
-########### end date Nov 13 (partial day)
-weather10 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1763069630/z6-10463(z6-10463)-Configuration 1-1763069630.916945.csv"),
+########### end date April 9
+weather10 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1775830718/z6-10463(z6-10463)-Configuration 1-1775830718.4114647.csv"),
                      skip=3, header=FALSE)
 colnames(weather10) <- c("Date","SolRad","Precip","LightningAct","LightningDist","WindDir","WindSpeed",
                         "GustSpeed","AirTemp","VaporPr","AtmosPr","XLevel","YLevel","MaxPrecip",
@@ -190,10 +190,9 @@ weather10$hour <- hour(dateF10)
 weather10$year <- year(dateF10)
 
 weather10 <- weather10 %>%
-  filter(doy > 210)
+  filter(doy != 34 & year == 2025)
 
-weatherT9 <- rbind(weatherT8, weather10)
-
+weatherT9 <- rbind(weatherT7, weather10)
 
 
 
@@ -244,8 +243,8 @@ PFlag <- data.frame(col_names = c("PrecipFlag"),
                     col_units = c("Freeze = freezing warning, Debris= blocked bucket"))
 colInfo <- rbind(colMeta[1:3,], PFlag, colMeta[4:23,])
 
-write.csv(weatherOut, paste0(dirOut,"/v1.8/Atmos41_weather.csv"), row.names=FALSE)
-write.csv(colInfo, paste0(dirOut,"/v1.8/Atmos41_metadata_columns.csv"), row.names=FALSE)
+write.csv(weatherOut, paste0(dirOut,"/v2.0/Atmos41_weather.csv"), row.names=FALSE)
+write.csv(colInfo, paste0(dirOut,"/v2.0/Atmos41_metadata_columns.csv"), row.names=FALSE)
 
 
 weatherOut$dateF <-  mdy_hms(weatherOut$Date)
