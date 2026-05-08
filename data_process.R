@@ -10,8 +10,10 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-dirData <- "G:/My Drive/research/projects/Data/campus_weather/ham_weather"
-dirOut <- "G:/My Drive/research/projects/Data/campus_weather/ham_weather_out"
+dirData <- "/Users/hkropp/Library/CloudStorage/GoogleDrive-hkropp@hamilton.edu/My Drive/research/projects/Data/campus_weather/ham_weather"
+  #"G:/My Drive/research/projects/Data/campus_weather/ham_weather"
+dirOut <- "/Users/hkropp/Library/CloudStorage/GoogleDrive-hkropp@hamilton.edu/My Drive/research/projects/Data/campus_weather/ham_weather_out"
+  #"G:/My Drive/research/projects/Data/campus_weather/ham_weather_out"
 
 ############### Organization of old data -----
 
@@ -189,14 +191,35 @@ weather10$doy <- yday(dateF10)
 weather10$hour <- hour(dateF10)
 weather10$year <- year(dateF10)
 
-weather10 <- weather10 %>%
-  filter(doy != 34 & year == 2025)
+weather10a <- weather10 %>%
+  filter(doy > 34 & year == 2025)
+weather10b <- weather10 %>%
+  filter( year == 2026)
+weather10 <- rbind(weather10a,weather10b)
 
 weatherT9 <- rbind(weatherT7, weather10)
 
 
 
 
+########### end date May 7
+weather11 <- read.csv(paste0(dirData,"/z6-10463(z6-10463)-1778262109/z6-10463(z6-10463)-Configuration 1-1778262109.225965.csv"),
+                      skip=3, header=FALSE)
+colnames(weather11) <- c("Date","SolRad","Precip","LightningAct","LightningDist","WindDir","WindSpeed",
+                         "GustSpeed","AirTemp","VaporPr","AtmosPr","XLevel","YLevel","MaxPrecip",
+                         "SensorTemp","VPD","SWC","SoilTemp", "EC", "BatPct","BatVolt","RefPr","LogTemp")
+
+dateF11 <- mdy_hms(weather11$Date)
+weather11$doy <- yday(dateF11)
+weather11$hour <- hour(dateF11)
+weather11$year <- year(dateF11)
+
+weather11 <- weather11 %>%
+  filter(doy > 99 )
+
+
+
+weatherT10 <- rbind(weatherT9, weather11)
 
 
 
@@ -209,7 +232,7 @@ weatherT9 <- rbind(weatherT7, weather10)
 # there is no accumulation of frozen precipitation. 
 
 # enter name of current data frame
-weatherToFlag <- weatherT9
+weatherToFlag <- weatherT10
 
 # freeze flag 
 freezeFlag <- rep(NA,7)
@@ -243,8 +266,8 @@ PFlag <- data.frame(col_names = c("PrecipFlag"),
                     col_units = c("Freeze = freezing warning, Debris= blocked bucket"))
 colInfo <- rbind(colMeta[1:3,], PFlag, colMeta[4:23,])
 
-write.csv(weatherOut, paste0(dirOut,"/v2.0/Atmos41_weather.csv"), row.names=FALSE)
-write.csv(colInfo, paste0(dirOut,"/v2.0/Atmos41_metadata_columns.csv"), row.names=FALSE)
+write.csv(weatherOut, paste0(dirOut,"/v2.1/Atmos41_weather.csv"), row.names=FALSE)
+write.csv(colInfo, paste0(dirOut,"/v2.1/Atmos41_metadata_columns.csv"), row.names=FALSE)
 
 
 weatherOut$dateF <-  mdy_hms(weatherOut$Date)
